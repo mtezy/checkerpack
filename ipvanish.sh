@@ -25,9 +25,9 @@ cat << "EOF"
                                      |
                                   o--o / IpVanish Account Checker
                                   Rewrite : mtezy
-                                  Tier : 1 ~ 1 Month $10.00 USD
-                                  Tier : 3 ~ 3 Months $26.99 USD
-                                  Tier: 12 ~ 1 Year $77.99 USD
+                                  Tier : 1 ~ Trial
+                                  Tier : 2 ~ Premium
+                                  
                                   
         ---------------------------------------------------------
  
